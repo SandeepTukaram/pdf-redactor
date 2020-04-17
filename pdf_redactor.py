@@ -715,6 +715,9 @@ def update_text_layer(options, text_tokens, page_tokens):
     if len(text_tokens) == 0:
         # No text content.
         return
+    
+    # cache parsed m start values to avoid duplicated processing.
+    cached_mstarts = []
 
     # Apply each regular expression to the text content...
     for pattern, function, offset in options.content_filters:
@@ -730,8 +733,18 @@ def update_text_layer(options, text_tokens, page_tokens):
                 i1 = m.start()
             else:
                 i1 = m.start() + 1
-            # i1 = m.start() + 1
             i2 = m.end()
+
+            cache_hit = False
+            for c_mstart, c_mend in cached_mstarts:
+                if ( (c_mstart <= i1 <= c_mend) or (i1<=c_mstart<=i2)):
+                    print >> sys.stderr, "cache 3hit: ", i1, i2
+                    cache_hit = True
+                    break
+
+            if cache_hit: continue
+
+            cached_mstarts.append((i1, i2))
 
             # Pass the matched text to the replacement function to get replaced text.
             replacement = function(m)
@@ -785,6 +798,7 @@ def update_text_layer(options, text_tokens, page_tokens):
 
                 # Advance for next iteration.
                 i1 += mlen
+        print >> sys.stderr, pattern.pattern, cached_mstarts
 
 
 def apply_updated_text(document, text_tokens, page_tokens):
