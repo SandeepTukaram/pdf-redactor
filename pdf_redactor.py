@@ -717,7 +717,7 @@ def update_text_layer(options, text_tokens, page_tokens):
         return
 
     # Apply each regular expression to the text content...
-    for pattern, function in options.content_filters:
+    for pattern, function, offset in options.content_filters:
         # Finding all matches...
         text_tokens_index = 0
         text_tokens_charpos = 0
@@ -725,7 +725,12 @@ def update_text_layer(options, text_tokens, page_tokens):
         text_content = "".join(addTrailingSpaceIfAbsent(t.value) for t in text_tokens)
         for m in pattern.finditer(text_content):
             # We got a match at text_content[i1:i2].
-            i1 = m.start() + 1
+            i1 = 0
+            if not offset:
+                i1 = m.start()
+            else:
+                i1 = m.start() + 1
+            # i1 = m.start() + 1
             i2 = m.end()
 
             # Pass the matched text to the replacement function to get replaced text.
@@ -739,6 +744,9 @@ def update_text_layer(options, text_tokens, page_tokens):
                 # tokens that are entirely before this span of text.
                 while text_tokens_index < len(text_tokens) and \
                         text_tokens_charpos + len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff <= i1:
+                    #     text_tokens_charpos + len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value) if offset else text_tokens[text_tokens_index].value) - text_tokens_token_xdiff <= i1:
+                    # text_tokens_charpos += len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value) if offset else text_tokens[text_tokens_index].value) - text_tokens_token_xdiff
+
                     text_tokens_charpos += len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff
                     text_tokens_index += 1
                     text_tokens_token_xdiff = 0
