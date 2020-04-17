@@ -738,7 +738,6 @@ def update_text_layer(options, text_tokens, page_tokens):
             cache_hit = False
             for c_mstart, c_mend in cached_mstarts:
                 if ( (c_mstart <= i1 <= c_mend) or (i1<=c_mstart<=i2)):
-                    print >> sys.stderr, "cache 3hit: ", i1, i2
                     cache_hit = True
                     break
 
@@ -798,7 +797,6 @@ def update_text_layer(options, text_tokens, page_tokens):
 
                 # Advance for next iteration.
                 i1 += mlen
-        print >> sys.stderr, pattern.pattern, cached_mstarts
 
 
 def apply_updated_text(document, text_tokens, page_tokens):
