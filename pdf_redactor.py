@@ -738,7 +738,7 @@ def update_text_layer(options, text_tokens, page_tokens):
                 # produced the matched text. Start by advancing over any
                 # tokens that are entirely before this span of text.
                 while text_tokens_index < len(text_tokens) and \
-                        text_tokens_charpos + len(text_tokens[text_tokens_index].value) - text_tokens_token_xdiff <= i1:
+                        text_tokens_charpos + len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff <= i1:
                     text_tokens_charpos += len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff
                     text_tokens_index += 1
                     text_tokens_token_xdiff = 0
