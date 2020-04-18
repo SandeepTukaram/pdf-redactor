@@ -675,10 +675,10 @@ def fromUnicode(string, font, fontcache, options):
         char_occurs = fontcache[font.BaseFont]
 
         def map_char(c):
-            for cc in [c] + options.content_replacement_glyphs:
-                if cc in char_occurs:
-                    return cc
-            return ""  # no replacement glyph => omit character
+            # for cc in [c] + options.content_replacement_glyphs: # do not understand the replacement glyphs logic here.
+            #     if cc in char_occurs:
+            #         return cc
+            return c  # no replacement glyph => omit character
 
         string = "".join(map_char(c) for c in string)
 
@@ -813,13 +813,17 @@ def apply_updated_text(document, text_tokens, page_tokens):
         # the str on PdfArray and PdfDict doesn't work right.
         def tok_str(tok):
             if isinstance(tok, PdfArray):
-                return "[ " + " ".join(tok_str(x) for x in tok) + "] "
+                arraytoken = "[ " + " ".join(tok_str(x) for x in tok) + "] "
+                return arraytoken
             if isinstance(tok, InlineImage):
-                return "BI " + " ".join(
+                inlineimagetoken = "BI " + " ".join(
                     tok_str(x) + " " + tok_str(y) for x, y in tok.items()) + " ID " + tok.stream + " EI "
+                return inlineimagetoken
             if isinstance(tok, PdfDict):
-                return "<< " + " ".join(tok_str(x) + " " + tok_str(y) for x, y in tok.items()) + ">> "
+                dicttoken = "<< " + " ".join(tok_str(x) + " " + tok_str(y) for x, y in tok.items()) + ">> "
+                return dicttoken
             return str(tok)
+
 
         page.Contents = PdfDict()
         page.Contents.stream = "\n".join(tok_str(tok) for tok in page_tokens[i])
