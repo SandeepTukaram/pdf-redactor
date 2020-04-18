@@ -737,7 +737,7 @@ def update_text_layer(options, text_tokens, page_tokens):
 
             cache_hit = False
             for c_mstart, c_mend in cached_mstarts:
-                if ( (c_mstart <= i1 <= c_mend) or (i1<=c_mstart<=i2)):
+                if (c_mstart <= i1 <= c_mend) or (i1 <= c_mstart <= i2):
                     cache_hit = True
                     break
 
@@ -774,6 +774,10 @@ def update_text_layer(options, text_tokens, page_tokens):
                 # How long is the match within this token?
                 mlen = min(i2 - i1, len(tok.value) - text_tokens_token_xdiff - mpos)
                 assert mlen >= 0
+
+                # Matched the very last character.
+                if (mlen == 0):
+                    mlen = 1
 
                 # How much should we replace here?
                 if mlen < (i2 - i1):
