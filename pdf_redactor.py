@@ -292,6 +292,8 @@ def tokenize_streams(streams):
                 continue
             elif token in (">>", "]"):
                 # ends a dictionary or array
+                if not stack:
+                    continue
                 constructor, content = stack.pop(-1)
                 if constructor == PdfDict:
                     # Turn flat list into key/value pairs.
