@@ -427,6 +427,8 @@ def build_text_layer(document, options):
 
         def make_mutable_string_token(token):
             if isinstance(token, PdfString):
+                if token.startswith('<') and not token.endswith('>'):
+                    token = PdfString('<' + ' '.encode("hex") + '>')
                 token = TextToken(token.to_bytes(), current_font)
 
                 # Remember all unicode characters seen in this font so we can
@@ -717,7 +719,6 @@ def update_text_layer(options, text_tokens, page_tokens):
     if len(text_tokens) == 0:
         # No text content.
         return
-    
     # cache parsed m start values to avoid duplicated processing.
     cached_mstarts = []
 
@@ -757,8 +758,10 @@ def update_text_layer(options, text_tokens, page_tokens):
                 # produced the matched text. Start by advancing over any
                 # tokens that are entirely before this span of text.
                 while text_tokens_index < len(text_tokens) and \
-                        text_tokens_charpos + len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff <= i1:
-                    text_tokens_charpos += len(addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff
+                        text_tokens_charpos + len(
+                    addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff <= i1:
+                    text_tokens_charpos += len(
+                        addTrailingSpaceIfAbsent(text_tokens[text_tokens_index].value)) - text_tokens_token_xdiff
                     text_tokens_index += 1
                     text_tokens_token_xdiff = 0
                 if text_tokens_index == len(text_tokens): break
@@ -825,7 +828,6 @@ def apply_updated_text(document, text_tokens, page_tokens):
                 dicttoken = "<< " + " ".join(tok_str(x) + " " + tok_str(y) for x, y in tok.items()) + ">> "
                 return dicttoken
             return str(tok)
-
 
         page.Contents = PdfDict()
         page.Contents.stream = "\n".join(tok_str(tok) for tok in page_tokens[i])
