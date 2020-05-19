@@ -854,7 +854,7 @@ def update_annotation(annotation, options):
     for string_field in ("Contents", "NM", "T", "Subj", "CA", "RC", "AC"):
         if getattr(annotation, string_field):
             value = getattr(annotation, string_field).to_unicode()
-            for pattern, function in options.content_filters:
+            for pattern, function, offset in options.content_filters:
                 value = pattern.sub(function, value)
             setattr(annotation, string_field, PdfString.from_unicode(value))
 
