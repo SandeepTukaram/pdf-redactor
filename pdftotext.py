@@ -2,9 +2,10 @@
 
 import re, io, sys
 
-import pdf_redactor
 
 ## Set options.
+from . import pdf_redactor
+
 
 def printer(m):
 	s = m.group(0)
